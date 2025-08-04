@@ -1,0 +1,19 @@
+embedding_model:
+  catalog: movie_scripts
+  schema: ad_placement_agent
+  model_name: clip
+embedding_endpoint_name: clip
+image_source:
+  catalog: movie_scripts
+  schema: ad_placement_agent
+  volume: movie_posters
+image_table:
+  catalog: movie_scripts
+  schema: ad_placement_agent
+  table: movie_posters_table
+vs_index:
+  catalog: movie_scripts
+  schema: ad_placement_agent
+  delta_sync_table: movie_scripts.ad_placement_agent.movie_poster_embeddings
+  index_name: movie_posters_vs
+  vs_endpoint: 
