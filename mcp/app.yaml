@@ -1,0 +1,8 @@
+command: ["python", "ad_placement_mcp.py"]
+env:
+  - name: 'DATABRICKS_HOST'
+    value: 'https://e2-demo-field-eng.cloud.databricks.com'
+  - name: 'ENDPOINT_NAME'
+    valueFrom: 'secrets/contextual_advertising/endpoint_name'
+  - name: 'DATABRICKS_TOKEN'
+    valueFrom: 'secrets/contextual_advertising/databricks_token'
