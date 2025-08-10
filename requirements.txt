@@ -1,0 +1,37 @@
+# Core Databricks and MLflow packages
+databricks-agents
+unitycatalog-ai[databricks]
+unitycatalog-langchain[databricks]
+databricks-langchain
+databricks-vectorsearch==0.56
+databricks-sdk
+
+# LangChain and related packages
+langchain==0.3.20
+langchain-community
+langchain-core
+langchain-text-splitters
+langgraph==0.3.4
+
+# MLflow and deployment
+mlflow[databricks]
+
+# Machine Learning and AI
+torch
+transformers
+pydantic==2.11.7
+
+# Web scraping and data processing
+beautifulsoup4
+lxml
+requests
+tqdm
+
+# Image processing
+Pillow
+
+# Data manipulation
+pandas
+
+# Standard library packages (not needed in requirements.txt but listed for reference)
+# json, re, time, base64, io, os, random, pprint, typing 

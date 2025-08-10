@@ -18,16 +18,16 @@ mcp = FastMCP("ad-placement")
 # Load environment variables
 DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "https://e2-demo-field-eng.cloud.databricks.com")
 ENDPOINT_NAME = os.getenv("ENDPOINT_NAME", "agents_movie_scripts-ad_placement_agent-movie_scripts_chatbot_a")
-DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN")
+SERVICE_PRINCIPAL_SECRET = os.getenv("SERVICE_PRINCIPAL_SECRET")
 
 def get_databricks_token():
     """
-    Get Databricks personal access token.
-    For model serving endpoints, you need a PAT, not service principal credentials.
+    Return the Personal Access Token directly - no OAuth exchange needed.
     """
-    if not DATABRICKS_TOKEN:
-        raise Exception("DATABRICKS_TOKEN environment variable is required")
-    return DATABRICKS_TOKEN
+    if not SERVICE_PRINCIPAL_SECRET:
+        print("Error: SERVICE_PRINCIPAL_SECRET environment variable not set")
+        return None
+    return SERVICE_PRINCIPAL_SECRET
 
 # Initialize OpenAI client for Databricks
 def get_openai_client():
