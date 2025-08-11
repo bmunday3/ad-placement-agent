@@ -41,14 +41,8 @@ ad-placement-agent/
 ├── resources/
 │   ├── 00-init.ipynb                  # Initialization notebook
 │   └── config                         # Configuration file
-├── app/                               # Application files (currently empty)
+├── app/                               # Databricks Apps files 
 └── mcp/                               # Model Context Protocol server implementation
-    ├── ad_placement_mcp.py           # Main MCP server with Databricks integration
-    ├── app.yaml                      # Databricks app configuration
-    ├── requirements.txt              # MCP server dependencies
-    ├── setup_oauth_secrets.sh        # OAuth secrets setup script
-    └── templates/                    # Web UI templates
-        └── index.html                # Main web interface
 ```
 
 ## 🔧 Installation & Setup
