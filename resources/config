@@ -1,19 +1,19 @@
 embedding_model:
-  catalog: movie_scripts
-  schema: ad_placement_agent
+  catalog: media_advertising
+  schema: contextual_advertising
   model_name: clip
 embedding_endpoint_name: clip
 image_source:
-  catalog: movie_scripts
-  schema: ad_placement_agent
+  catalog: media_advertising
+  schema: contextual_advertising
   volume: movie_posters
 image_table:
-  catalog: movie_scripts
-  schema: ad_placement_agent
+  catalog: media_advertising
+  schema: contextual_advertising
   table: movie_posters_table
 vs_index:
-  catalog: movie_scripts
-  schema: ad_placement_agent
-  delta_sync_table: movie_scripts.ad_placement_agent.movie_poster_embeddings
+  catalog: media_advertising
+  schema: contextual_advertising
+  delta_sync_table: media_advertising.contextual_advertising.movie_poster_embeddings
   index_name: movie_posters_vs
-  vs_endpoint: 
+  vs_endpoint: one-env-shared-endpoint-10
