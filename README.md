@@ -80,7 +80,7 @@ query = "When could I insert a commercial for a light-hearted basketball-themed 
 # based on scene context, genre, and timing
 ```
 
-TODO: add screenshot
+![Example response](./images/example-response.png)
 
 
 ## 🤝 Contributing
