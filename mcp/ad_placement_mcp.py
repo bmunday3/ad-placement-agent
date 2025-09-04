@@ -1,6 +1,4 @@
 import os
-import json
-import requests
 from typing import Dict, Any
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
@@ -10,36 +8,19 @@ from starlette.responses import JSONResponse, HTMLResponse
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 import uvicorn
-from openai import OpenAI
+# from openai import OpenAI
+
+from databricks.sdk import WorkspaceClient
+from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
 
 # Initialize FastMCP server
 mcp = FastMCP("ad-placement")
 
+# Initialize Databricks client
+w = WorkspaceClient()
+
 # Load environment variables
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "https://e2-demo-field-eng.cloud.databricks.com")
-ENDPOINT_NAME = os.getenv("ENDPOINT_NAME", "agents_movie_scripts-ad_placement_agent-movie_scripts_chatbot_a")
-SERVICE_PRINCIPAL_SECRET = os.getenv("SERVICE_PRINCIPAL_SECRET")
-
-def get_databricks_token():
-    """
-    Return the Personal Access Token directly - no OAuth exchange needed.
-    """
-    if not SERVICE_PRINCIPAL_SECRET:
-        print("Error: SERVICE_PRINCIPAL_SECRET environment variable not set")
-        return None
-    return SERVICE_PRINCIPAL_SECRET
-
-# Initialize OpenAI client for Databricks
-def get_openai_client():
-    """Get OpenAI client with fresh token"""
-    token = get_databricks_token()
-    if not token:
-        raise Exception("Failed to obtain Databricks token")
-    
-    return OpenAI(
-        api_key=token,
-        base_url=f"{DATABRICKS_HOST}/serving-endpoints"
-    )
+ENDPOINT_NAME = os.getenv("ENDPOINT_NAME")
 
 # Set up templates
 templates = Jinja2Templates(directory="templates/")
@@ -58,15 +39,18 @@ async def get_ad_placement(prompt: str) -> str:
         A detailed recommendation including suggested movie genres, titles,
         optimal scene types, timing, and reasoning.
     """
-    try:
-        client = get_openai_client()
-        response = client.chat.completions.create(
-            model=ENDPOINT_NAME,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Error: Failed to generate recommendation - {str(e)}"
+    response = w.serving_endpoints.query(
+        name=ENDPOINT_NAME,
+        messages=[
+            ChatMessage(
+                role=ChatMessageRole.USER,
+                content=prompt,
+            ),
+        ],
+    )
+
+    return response.choices[0].message.content
+
 
 async def home(request: Request) -> HTMLResponse:
     """Serve the HTML interface"""
@@ -83,10 +67,14 @@ async def health_check(request: Request) -> JSONResponse:
     """Health check endpoint"""
     try:
         # Test connection to Databricks
-        client = get_openai_client()
-        response = client.chat.completions.create(
-            model=ENDPOINT_NAME,
-            messages=[{"role": "user", "content": "Hello, this is a health check."}]
+        response = w.serving_endpoints.query(
+            name=ENDPOINT_NAME,
+            messages=[
+                ChatMessage(
+                    role=ChatMessageRole.USER,
+                    content="Hello, this is a health check.",
+                ),
+            ],
         )
         return JSONResponse({"status": "healthy", "endpoint": ENDPOINT_NAME})
     except Exception as e:

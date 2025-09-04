@@ -1,4 +1,4 @@
 command: ["python", "ad_placement_mcp.py"]
 env:
-  - name: 'SERVICE_PRINCIPAL_SECRET'
-    valueFrom: 'secrets/contextual_advertising/service_principal_secret'
+  - name: 'ENDPOINT_NAME'
+    valueFrom: 'serving-endpoint'
