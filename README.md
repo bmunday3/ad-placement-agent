@@ -41,28 +41,8 @@ ad-placement-agent/
 ├── resources/
 │   ├── 00-init.ipynb                  # Initialization notebook
 │   └── config                         # Configuration file
-├── app/                               # Databricks Apps files 
 └── mcp/                               # Model Context Protocol server implementation
 ```
-
-## 🔧 Installation & Setup
-
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd ad-placement-agent
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Configure Databricks**:
-   - Set up Unity Catalog with catalog: `movie_scripts`
-   - Create schema: `ad_placement_agent`
-   - Configure Vector Search endpoint
-   - Set up MLflow tracking
 
 ## 📖 Usage
 
@@ -104,6 +84,8 @@ TODO: add screenshot
 
 
 ## 🤝 Contributing
+
+We're always open to improving this and any contributions! Please follow the below instructions or file an issue.
 
 1. Fork the repository
 2. Create a feature branch
