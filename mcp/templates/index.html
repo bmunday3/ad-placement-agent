@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contextual Advertising Agent</title>
-    <link rel="icon" type="image/svg+xml" href="/static/databricks-symbol-color.svg">
-    <link rel="shortcut icon" href="/static/databricks-symbol-color.svg">
+    <link rel="icon" type="image/svg+xml" href="/static/images/databricks-symbol-color.svg">
+    <link rel="shortcut icon" href="/static/images/databricks-symbol-color.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
@@ -21,44 +21,232 @@
             font-family: 'DM Sans', sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
         }
         
-        .container {
-            max-width: 1000px;
-            margin: 100px auto 50px auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .content-container {
+            display: flex;
+            flex: 1;
+            min-height: calc(100vh - 120px);
+        }
+        
+        .about-panel {
+            width: 0;
+            background: #f8f9fa;
+            border-right: 1px solid #e1e5e9;
             overflow: hidden;
+            transition: width 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .about-panel.open {
+            width: 300px;
+        }
+        
+        .hamburger-menu {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu:hover {
+            opacity: 0.8;
+        }
+        
+        .hamburger-menu img {
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu.open img {
+            transform: rotate(90deg);
+        }
+        
+        .about-panel-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .about-panel-content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .about-panel-content h3 {
+            color: #2c3e50;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+        }
+        
+        .about-panel-content h4 {
+            color: #34495e;
+            margin: 20px 0 10px 0;
+            font-size: 14px;
+        }
+        
+        .about-panel-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .about-panel-content li {
+            margin: 8px 0;
+            color: #555;
+        }
+        
+        .about-panel-content p {
+            margin: 15px 0;
+            color: #555;
+        }
+        
+        .collapsible-section {
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .collapsible-header {
+            background: #c2c5c8;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #c2c5c8;
+            transition: background-color 0.2s ease;
+        }
+        
+        .collapsible-header:hover {
+            background: #a4a6aa;
+        }
+        
+        .collapsible-header h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .collapsible-icon {
+            font-size: 24px;
+            color: #6c757d;
+            transition: transform 0.2s ease;
+            font-weight: bold;
+        }
+        
+        .collapsible-section.open .collapsible-icon {
+            transform: rotate(90deg);
+        }
+        
+        .collapsible-content {
+            padding: 15px;
+            display: none;
+        }
+        
+        .collapsible-section.open .collapsible-content {
+            display: block;
+        }
+        
+        .health-check-section .button {
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+        
+        .chat-panel {
+            flex: 1;
+            background: white;
+            border-right: 1px solid #e1e5e9;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chain-of-thought-panel {
+            flex: 0 0 33.333%;
+            background: #f8f9fa;
+            border-left: 1px solid #e1e5e9;
+            display: flex;
+            flex-direction: column;
         }
         
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
         }
         
         .databricks-logo {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-            vertical-align: middle;
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
         }
         
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 1.8em;
+            margin: 0;
+            font-weight: 600;
         }
         
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
-        .content {
+        .chat-content {
             padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .chain-of-thought-content-panel {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .chain-of-thought-header {
+            background: #96a3f4;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .form-group {
@@ -221,16 +409,17 @@
         
         /* Chain of thought styling */
         .chain-of-thought-content {
-            background: #f8f9fa;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 15px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
             line-height: 1.5;
             color: #555;
-            max-height: 400px;
-            overflow-y: auto;
+        }
+        
+        .chain-of-thought-placeholder {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 40px 20px;
         }
         
         .chain-of-thought-content h1,
@@ -362,64 +551,105 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="main-container">
         <div class="header">
-            <h1><img src="/static/databricks-symbol-color.svg" alt="Databricks" class="databricks-logo">Contextual Advertising Agent MCP Server</h1>
-            <p>Intelligent recommendations for optimized ad placement in media content</p>
+            <div class="header-left">
+                <button class="hamburger-menu" id="hamburgerMenu" title="Toggle Sidebar">
+                    <img src="/static/images/more.png" alt="Menu" style="width: 24px; height: 24px;">
+                </button>
+                <img src="/static/images/databricks-symbol-color.svg" alt="Databricks" class="databricks-logo">
+                <h1>Contextual Content Placement</h1>
+            </div>
+            <div class="header-right">
+                <a href="https://e2-demo-west.cloud.databricks.com/ml/experiments/b822d31cbc8e4124913eabd45ad580bf/traces?o=2556758628403379" target="_blank" class="button" id="tracesBtn" style="background: #e74c3c; padding: 8px 16px; font-size: 14px; width: auto; margin: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    View Traces & Evals
+                    <img src="/static/images/arrow.png" alt="External link" style="width: 12px; height: 12px;">
+                </a>
+            </div>
         </div>
         
-        <div class="content">
-            <div class="form-group">
-                <label>Custom MCP Server on Databricks</label>
-                <p style="margin-top: 8px; color: #555; line-height: 1.6; font-size: 14px;">
-                    This app hosts a custom MCP server that is a wrapper around the contextual advertising agent built and served on Databricks. Use the below fields to test the functionality. For more information, visit <a href="https://docs.databricks.com/aws/en/generative-ai/mcp/custom-mcp" target="_blank" style="color: #FF3621; text-decoration: none;">Custom MCP Servers on Databricks</a>.
-                </p>
-            </div>
-            
-            <div id="healthStatus" class="health-status" style="display: none;">
-                <strong>Click the button below to check connection status</strong>
-            </div>
-            
-            <div class="form-group">
-                <button type="button" class="button" id="healthCheckBtn" style="background: #2c3e50; margin-bottom: 20px;">
-                    Check Connection Status
-                </button>
-            </div>
-            
-            <form id="queryForm">
-                <div class="form-group">
-                    <label for="prompt">Describe your advertisement and target audience:</label>
-                    <textarea 
-                        id="prompt" 
-                        name="prompt" 
-                        placeholder="Example: I want to place an advertisement for a new sports drink during a basketball-themed comedy movie. The target audience is young adults aged 18-35 who are interested in fitness and sports."
-                        required
-                    ></textarea>
+        <div class="content-container">
+            <div class="about-panel" id="aboutPanel">
+                <div class="about-panel-content">
+                    <div class="collapsible-section open" id="aboutSection">
+                        <div class="collapsible-header" onclick="toggleSection('aboutSection')">
+                            <h4>About this App</h4>
+                            <span class="collapsible-icon">›</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h3>Custom MCP Server on Databricks</h3>
+                            <p>This app hosts a custom MCP server that is a wrapper around the contextual content placement agent built and served on Databricks. This means you can not only use the app to test the functionality of the agent to see how it recommends optimal content placement, but you can also leverage the functionality outside of Databricks via the MCP wrapper.</p>
+                            
+                            <h4>How it works:</h4>
+                            <ul>
+                                <li>Enter your advertisement or content details and target audience</li>
+                                <li>The agent searches through movie scripts for relevant scenes</li>
+                                <li>View the reasoning process in the right panel</li>
+                                <li>Get detailed recommendations with markdown formatting</li>
+                            </ul>
+                            
+                            <p>For more information, visit <a href="https://docs.databricks.com/aws/en/generative-ai/mcp/custom-mcp" target="_blank" style="color: #FF3621; text-decoration: none;">Custom MCP Servers on Databricks</a>.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="collapsible-section" id="connectionSection">
+                        <div class="collapsible-header" onclick="toggleSection('connectionSection')">
+                            <h4>Connection Status</h4>
+                            <span class="collapsible-icon">›</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <button type="button" class="button" id="healthCheckBtn" style="background: #FF3621; padding: 8px 16px; font-size: 14px; width: 100%; margin: 10px 0;">
+                                Check Connection Status
+                            </button>
+                            <div id="healthStatus" class="health-status" style="display: none; margin-top: 10px;">
+                                <strong>Click the button above to check connection status</strong>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <button type="submit" class="button" id="submitBtn">
-                    Get Ad Placement Recommendation
-                </button>
-            </form>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Analyzing movie scripts and generating recommendations...</p>
             </div>
             
-            <div class="response" id="response">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3>🎯 Ad Placement Recommendation</h3>
-                    <button type="button" id="toggleChainOfThought" class="button" style="background: #2c3e50; padding: 8px 16px; font-size: 14px; width: auto; margin: 0; display: none;">
-                        Show Agent Reasoning
-                    </button>
+            <div class="chat-panel">
+                <div class="chat-content">
+            
+                    <form id="queryForm">
+                        <div class="form-group">
+                            <label for="prompt">Describe your advertisement or content and target audience:</label>
+                            <textarea 
+                                id="prompt" 
+                                name="prompt" 
+                                placeholder="Example: I want to place an advertisement for a new sports drink during a basketball-themed comedy movie. The target audience is young adults aged 18-35 who are interested in fitness and sports."
+                                required
+                            ></textarea>
+                        </div>
+                        
+                        <button type="submit" class="button" id="submitBtn">
+                            Get Content Placement Recommendation
+                        </button>
+                    </form>
+                    
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Analyzing movie scripts and generating recommendations...</p>
+                    </div>
+                    
+                    <div class="response" id="response">
+                        <h3>🎯 Ad Placement Recommendation</h3>
+                        <div class="response-content" id="responseContent"></div>
+                    </div>
                 </div>
-                <div class="response-content" id="responseContent"></div>
             </div>
             
-            <div class="response" id="chainOfThoughtResponse" style="display: none;">
-                <h3>🧠 Agent Reasoning Process</h3>
-                <div class="chain-of-thought-content" id="chainOfThoughtContent"></div>
+            <div class="chain-of-thought-panel">
+                <div class="chain-of-thought-header">
+                    🧠 Agent Reasoning
+                </div>
+                <div class="chain-of-thought-content-panel">
+                    <div class="chain-of-thought-placeholder" id="chainOfThoughtPlaceholder">
+                        Submit a query to see the agent's reasoning process
+                    </div>
+                    <div class="chain-of-thought-content" id="chainOfThoughtContent" style="display: none;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -430,19 +660,24 @@
             await checkHealth();
         });
         
-        // Toggle chain of thought functionality
-        document.getElementById('toggleChainOfThought').addEventListener('click', () => {
-            const chainOfThoughtResponse = document.getElementById('chainOfThoughtResponse');
-            const toggleBtn = document.getElementById('toggleChainOfThought');
+        // Hamburger menu functionality
+        document.getElementById('hamburgerMenu').addEventListener('click', () => {
+            const aboutPanel = document.getElementById('aboutPanel');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
             
-            if (chainOfThoughtResponse.style.display === 'none') {
-                chainOfThoughtResponse.style.display = 'block';
-                toggleBtn.textContent = 'Hide Agent Reasoning';
-            } else {
-                chainOfThoughtResponse.style.display = 'none';
-                toggleBtn.textContent = 'Show Agent Reasoning';
-            }
+            aboutPanel.classList.toggle('open');
+            hamburgerMenu.classList.toggle('open');
         });
+        
+        // Traces button now opens external link directly
+        
+        // Collapsible sections functionality
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('open');
+        }
+        
+        // Chain of thought is now always visible in the right panel
         
         // Function to format chain of thought content
         function formatChainOfThought(content) {
@@ -510,7 +745,7 @@
                 healthDiv.style.display = 'block';
                 
                 if (data.status === 'healthy') {
-                    healthDiv.innerHTML = '<strong>✅ Connected to Agent</strong>';
+                    healthDiv.innerHTML = '<strong>✅ Connected to Agent</strong><br><small>Endpoint: ' + (data.endpoint || 'Unknown') + '</small>';
                     healthDiv.className = 'health-status';
                 } else {
                     healthDiv.innerHTML = '<strong>❌ Connection Error</strong><br>' + data.error;
@@ -536,15 +771,15 @@
             const loading = document.getElementById('loading');
             const response = document.getElementById('response');
             const responseContent = document.getElementById('responseContent');
-            const chainOfThoughtResponse = document.getElementById('chainOfThoughtResponse');
             const chainOfThoughtContent = document.getElementById('chainOfThoughtContent');
+            const chainOfThoughtPlaceholder = document.getElementById('chainOfThoughtPlaceholder');
             
             // Show loading state
             submitBtn.disabled = true;
             loading.style.display = 'block';
             response.style.display = 'none';
-            chainOfThoughtResponse.style.display = 'none';
-            document.getElementById('toggleChainOfThought').style.display = 'none';
+            chainOfThoughtContent.style.display = 'none';
+            chainOfThoughtPlaceholder.style.display = 'block';
             
             try {
                 const result = await fetch('/query', {
@@ -566,7 +801,11 @@
                     // Display chain of thought if available
                     if (data.chain_of_thought && data.chain_of_thought !== "No chain of thought detected") {
                         chainOfThoughtContent.innerHTML = formatChainOfThought(data.chain_of_thought);
-                        document.getElementById('toggleChainOfThought').style.display = 'inline-block';
+                        chainOfThoughtContent.style.display = 'block';
+                        chainOfThoughtPlaceholder.style.display = 'none';
+                    } else {
+                        chainOfThoughtPlaceholder.style.display = 'block';
+                        chainOfThoughtContent.style.display = 'none';
                     }
                 } else {
                     responseContent.textContent = 'Error: ' + data.error;
