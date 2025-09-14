@@ -1,5 +1,6 @@
 import os
-from typing import Dict, Any
+import re
+from typing import Dict, Any, Tuple
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from starlette.routing import Mount, Route
@@ -24,6 +25,76 @@ ENDPOINT_NAME = os.getenv("ENDPOINT_NAME")
 
 # Set up templates
 templates = Jinja2Templates(directory="templates/")
+
+def parse_response(response: str) -> Tuple[str, str]:
+    """
+    Parse the response to separate chain of thought from markdown content.
+    
+    Args:
+        response: The full response string from the agent
+        
+    Returns:
+        Tuple of (chain_of_thought, markdown_content)
+    """
+    # Common patterns that might indicate the start of markdown content
+    markdown_indicators = [
+        r'#\s+.*',  # Headers starting with #
+        r'\*\*.*\*\*',  # Bold text
+        r'##\s+.*',  # Level 2 headers
+        r'###\s+.*',  # Level 3 headers
+        r'-\s+.*',  # List items
+        r'\d+\.\s+.*',  # Numbered lists
+    ]
+    
+    # Try to find where markdown content starts
+    lines = response.split('\n')
+    markdown_start = 0
+    
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if not line:  # Skip empty lines
+            continue
+            
+        # Check if this line matches any markdown pattern
+        for pattern in markdown_indicators:
+            if re.match(pattern, line):
+                markdown_start = i
+                break
+        else:
+            continue
+        break
+    
+    # Split the response
+    chain_of_thought = '\n'.join(lines[:markdown_start]).strip()
+    markdown_content = '\n'.join(lines[markdown_start:]).strip()
+    
+    # If no clear separation found, try alternative approach
+    if not markdown_content:
+        # Look for common markdown section headers
+        section_patterns = [
+            r'##\s+.*[Rr]ecommendation.*',
+            r'##\s+.*[Aa]nalysis.*',
+            r'##\s+.*[Ss]ummary.*',
+            r'#\s+.*[Rr]ecommendation.*',
+            r'#\s+.*[Aa]nalysis.*',
+        ]
+        
+        for i, line in enumerate(lines):
+            for pattern in section_patterns:
+                if re.search(pattern, line, re.IGNORECASE):
+                    markdown_start = i
+                    chain_of_thought = '\n'.join(lines[:markdown_start]).strip()
+                    markdown_content = '\n'.join(lines[markdown_start:]).strip()
+                    break
+            if markdown_content:
+                break
+    
+    # Fallback: if still no separation, return the whole response as markdown
+    if not chain_of_thought:
+        chain_of_thought = "No chain of thought detected"
+        markdown_content = response
+    
+    return chain_of_thought, markdown_content
 
 @mcp.tool()
 async def get_ad_placement(prompt: str) -> str:
@@ -90,7 +161,13 @@ async def query_endpoint(request: Request) -> JSONResponse:
             return JSONResponse({"error": "Prompt is required"}, status_code=400)
         
         response = await get_ad_placement(prompt)
-        return JSONResponse({"response": response})
+        chain_of_thought, markdown_content = parse_response(response)
+        
+        return JSONResponse({
+            "response": markdown_content,
+            "chain_of_thought": chain_of_thought,
+            "full_response": response
+        })
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 

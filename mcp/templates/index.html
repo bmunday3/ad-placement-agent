@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -127,9 +128,193 @@
         }
         
         .response-content {
-            white-space: pre-wrap;
             line-height: 1.6;
             color: #555;
+        }
+        
+        /* Markdown styling */
+        .response-content h1,
+        .response-content h2,
+        .response-content h3,
+        .response-content h4,
+        .response-content h5,
+        .response-content h6 {
+            margin: 20px 0 10px 0;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .response-content h1 { font-size: 1.8em; }
+        .response-content h2 { font-size: 1.5em; }
+        .response-content h3 { font-size: 1.3em; }
+        .response-content h4 { font-size: 1.1em; }
+        
+        .response-content p {
+            margin: 10px 0;
+        }
+        
+        .response-content ul,
+        .response-content ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .response-content li {
+            margin: 5px 0;
+        }
+        
+        .response-content strong {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .response-content em {
+            font-style: italic;
+        }
+        
+        .response-content code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .response-content pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .response-content pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        .response-content blockquote {
+            border-left: 4px solid #FF3621;
+            margin: 15px 0;
+            padding-left: 15px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .response-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .response-content th,
+        .response-content td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .response-content th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        /* Chain of thought styling */
+        .chain-of-thought-content {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .chain-of-thought-content h1,
+        .chain-of-thought-content h2,
+        .chain-of-thought-content h3 {
+            font-family: 'DM Sans', sans-serif;
+            margin: 10px 0 5px 0;
+            color: #333;
+        }
+        
+        .chain-of-thought-content strong {
+            color: #FF3621;
+            font-weight: 600;
+        }
+        
+        /* Chain of thought specific formatting */
+        .cot-user-query {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        
+        .cot-tool-call {
+            background: #fff3e0;
+            border: 1px solid #ffb74d;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .cot-tool-call-header {
+            background: #ff9800;
+            color: white;
+            padding: 6px 12px;
+            margin: -12px -12px 8px -12px;
+            border-radius: 6px 6px 0 0;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .cot-tool-result {
+            background: #f3e5f5;
+            border: 1px solid #ba68c8;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .cot-tool-result-header {
+            background: #9c27b0;
+            color: white;
+            padding: 6px 12px;
+            margin: -12px -12px 8px -12px;
+            border-radius: 6px 6px 0 0;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .cot-reasoning {
+            background: #e8f5e8;
+            border-left: 4px solid #4caf50;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-style: italic;
+            color: #2e7d32;
+        }
+        
+        .cot-json-content {
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 4px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-size: 12px;
         }
         
         .loading {
@@ -223,8 +408,18 @@
             </div>
             
             <div class="response" id="response">
-                <h3>🎯 Ad Placement Recommendation</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3>🎯 Ad Placement Recommendation</h3>
+                    <button type="button" id="toggleChainOfThought" class="button" style="background: #2c3e50; padding: 8px 16px; font-size: 14px; width: auto; margin: 0; display: none;">
+                        Show Agent Reasoning
+                    </button>
+                </div>
                 <div class="response-content" id="responseContent"></div>
+            </div>
+            
+            <div class="response" id="chainOfThoughtResponse" style="display: none;">
+                <h3>🧠 Agent Reasoning Process</h3>
+                <div class="chain-of-thought-content" id="chainOfThoughtContent"></div>
             </div>
         </div>
     </div>
@@ -234,6 +429,69 @@
         document.getElementById('healthCheckBtn').addEventListener('click', async () => {
             await checkHealth();
         });
+        
+        // Toggle chain of thought functionality
+        document.getElementById('toggleChainOfThought').addEventListener('click', () => {
+            const chainOfThoughtResponse = document.getElementById('chainOfThoughtResponse');
+            const toggleBtn = document.getElementById('toggleChainOfThought');
+            
+            if (chainOfThoughtResponse.style.display === 'none') {
+                chainOfThoughtResponse.style.display = 'block';
+                toggleBtn.textContent = 'Hide Agent Reasoning';
+            } else {
+                chainOfThoughtResponse.style.display = 'none';
+                toggleBtn.textContent = 'Show Agent Reasoning';
+            }
+        });
+        
+        // Function to format chain of thought content
+        function formatChainOfThought(content) {
+            if (!content) return '';
+            
+            let formatted = content;
+            
+            // Format user queries (lines that don't start with < or are empty)
+            formatted = formatted.replace(/^([^<\n].+)$/gm, '<div class="cot-user-query">$1</div>');
+            
+            // Format tool calls
+            formatted = formatted.replace(/<tool_call>([\s\S]*?)<\/tool_call>/g, (match, jsonContent) => {
+                try {
+                    const parsed = JSON.parse(jsonContent.trim());
+                    const formattedJson = JSON.stringify(parsed, null, 2);
+                    return `<div class="cot-tool-call">
+                        <div class="cot-tool-call-header">🔧 Tool Call: ${parsed.name || 'Unknown'}</div>
+                        <div class="cot-json-content">${formattedJson}</div>
+                    </div>`;
+                } catch (e) {
+                    return `<div class="cot-tool-call">
+                        <div class="cot-tool-call-header">🔧 Tool Call</div>
+                        <div class="cot-json-content">${jsonContent}</div>
+                    </div>`;
+                }
+            });
+            
+            // Format tool call results
+            formatted = formatted.replace(/<tool_call_result>([\s\S]*?)<\/tool_call_result>/g, (match, jsonContent) => {
+                try {
+                    const parsed = JSON.parse(jsonContent.trim());
+                    const formattedJson = JSON.stringify(parsed, null, 2);
+                    return `<div class="cot-tool-result">
+                        <div class="cot-tool-result-header">📋 Tool Result</div>
+                        <div class="cot-json-content">${formattedJson}</div>
+                    </div>`;
+                } catch (e) {
+                    return `<div class="cot-tool-result">
+                        <div class="cot-tool-result-header">📋 Tool Result</div>
+                        <div class="cot-json-content">${jsonContent}</div>
+                    </div>`;
+                }
+            });
+            
+            // Format reasoning text (lines that start with common reasoning words)
+            formatted = formatted.replace(/^(Based on|Let me|I can|I will|The analysis|This shows|Therefore|In conclusion|The results|The data)([\s\S]*?)(?=<|$)/gm, '<div class="cot-reasoning">$1$2</div>');
+            
+            return formatted;
+        }
         
         async function checkHealth() {
             const healthDiv = document.getElementById('healthStatus');
@@ -278,11 +536,15 @@
             const loading = document.getElementById('loading');
             const response = document.getElementById('response');
             const responseContent = document.getElementById('responseContent');
+            const chainOfThoughtResponse = document.getElementById('chainOfThoughtResponse');
+            const chainOfThoughtContent = document.getElementById('chainOfThoughtContent');
             
             // Show loading state
             submitBtn.disabled = true;
             loading.style.display = 'block';
             response.style.display = 'none';
+            chainOfThoughtResponse.style.display = 'none';
+            document.getElementById('toggleChainOfThought').style.display = 'none';
             
             try {
                 const result = await fetch('/query', {
@@ -296,16 +558,23 @@
                 const data = await result.json();
                 
                 if (result.ok) {
-                    responseContent.textContent = data.response;
+                    // Parse and render markdown content
+                    responseContent.innerHTML = marked.parse(data.response);
                     response.className = 'response';
+                    response.style.display = 'block';
+                    
+                    // Display chain of thought if available
+                    if (data.chain_of_thought && data.chain_of_thought !== "No chain of thought detected") {
+                        chainOfThoughtContent.innerHTML = formatChainOfThought(data.chain_of_thought);
+                        document.getElementById('toggleChainOfThought').style.display = 'inline-block';
+                    }
                 } else {
                     responseContent.textContent = 'Error: ' + data.error;
                     response.className = 'response error';
+                    response.style.display = 'block';
                 }
-                
-                response.style.display = 'block';
             } catch (error) {
-                responseContent.textContent = 'Error: Unable to connect to the server';
+                responseContent.innerHTML = 'Error: Unable to connect to the server';
                 response.className = 'response error';
                 response.style.display = 'block';
             } finally {
