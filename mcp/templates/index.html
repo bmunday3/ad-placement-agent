@@ -1218,6 +1218,10 @@
             chainOfThoughtContent.style.display = 'none';
             chainOfThoughtPlaceholder.style.display = 'block';
             
+            // Show loading spinner
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            
             try {
                 // Get the file from the input
                 const file = fileInput.files[0];
@@ -1275,6 +1279,7 @@
             } finally {
                 analyzeBtn.disabled = false;
                 analyzeBtn.textContent = 'Get Content Placement Recommendation';
+                loading.style.display = 'none';
             }
         });
     </script>
