@@ -2,3 +2,5 @@ command: ["python", "ad_placement_mcp.py"]
 env:
   - name: 'ENDPOINT_NAME'
     valueFrom: 'serving-endpoint'
+  - name: "IMAGE_TO_TEXT_ENDPOINT_NAME"
+    valueFrom: 'serving-endpoint-2'

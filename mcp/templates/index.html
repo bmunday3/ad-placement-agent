@@ -73,10 +73,6 @@
             transition: all 0.3s ease;
         }
         
-        .hamburger-menu.open img {
-            transform: rotate(90deg);
-        }
-        
         .about-panel-header {
             background: #2c3e50;
             color: white;
@@ -153,10 +149,9 @@
         }
         
         .collapsible-icon {
-            font-size: 24px;
-            color: #6c757d;
+            width: 16px;
+            height: 16px;
             transition: transform 0.2s ease;
-            font-weight: bold;
         }
         
         .collapsible-section.open .collapsible-icon {
@@ -175,6 +170,148 @@
         .health-check-section .button {
             font-size: 12px;
             padding: 8px 16px;
+        }
+        
+        /* Tab styling */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #e1e5e9;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6c757d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            color: #FF3621;
+            border-bottom-color: #FF3621;
+        }
+        
+        .tab-button:hover {
+            color: #FF3621;
+            background: #f8f9fa;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Image upload styling */
+        .image-upload-area {
+            border: 2px dashed #e1e5e9;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .image-upload-area:hover {
+            border-color: #FF3621;
+            background: #fff5f5;
+        }
+        
+        .image-upload-area.dragover {
+            border-color: #FF3621;
+            background: #fff5f5;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #6c757d;
+            margin-bottom: 16px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtext {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .image-preview-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .image-preview-container.show {
+            display: block;
+        }
+        
+        .image-preview-container .button {
+            width: auto;
+            min-width: 150px;
+            margin: 0 5px;
+            display: inline-block;
+        }
+        
+        .tab-content .button:not(.image-preview-container .button) {
+            width: auto;
+            min-width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .tab-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .clear-recommendation-btn {
+            background: #c2c5c8 !important;
+            color: #333 !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+            margin: 0 !important;
+            min-width: auto !important;
+            width: auto !important;
+            display: inline-block !important;
+        }
+        
+        .upload-widget {
+            display: block;
+        }
+        
+        .upload-widget.hidden {
+            display: none;
+        }
+        
+        .file-input {
+            display: none;
         }
         
         .chat-panel {
@@ -506,6 +643,54 @@
             font-size: 12px;
         }
         
+        .cot-image-description {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 6px;
+            margin: 8px 0;
+            padding: 10px;
+        }
+        
+        .cot-image-description-header {
+            font-weight: bold;
+            color: #2e7d32;
+            font-size: 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .cot-image-description-content {
+            color: #2e7d32;
+            font-size: 11px;
+            line-height: 1.4;
+            font-style: italic;
+        }
+        
+        .cot-prompt-sent {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            border-radius: 6px;
+            margin: 8px 0;
+            padding: 10px;
+        }
+        
+        .cot-prompt-sent-header {
+            font-weight: bold;
+            color: #ef6c00;
+            font-size: 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .cot-prompt-sent-content {
+            color: #ef6c00;
+            font-size: 11px;
+            line-height: 1.4;
+            font-family: 'Courier New', monospace;
+        }
+        
         .loading {
             text-align: center;
             padding: 20px;
@@ -574,7 +759,7 @@
                     <div class="collapsible-section open" id="aboutSection">
                         <div class="collapsible-header" onclick="toggleSection('aboutSection')">
                             <h4>About this App</h4>
-                            <span class="collapsible-icon">›</span>
+                            <img src="/static/images/right-arrow.png" alt="Expand" class="collapsible-icon">
                         </div>
                         <div class="collapsible-content">
                             <h3>Custom MCP Server on Databricks</h3>
@@ -595,7 +780,7 @@
                     <div class="collapsible-section" id="connectionSection">
                         <div class="collapsible-header" onclick="toggleSection('connectionSection')">
                             <h4>Connection Status</h4>
-                            <span class="collapsible-icon">›</span>
+                            <img src="/static/images/right-arrow.png" alt="Expand" class="collapsible-icon">
                         </div>
                         <div class="collapsible-content">
                             <button type="button" class="button" id="healthCheckBtn" style="background: #FF3621; padding: 8px 16px; font-size: 14px; width: 100%; margin: 10px 0;">
@@ -611,22 +796,70 @@
             
             <div class="chat-panel">
                 <div class="chat-content">
-            
-                    <form id="queryForm">
-                        <div class="form-group">
-                            <label for="prompt">Describe your advertisement or content and target audience:</label>
-                            <textarea 
-                                id="prompt" 
-                                name="prompt" 
-                                placeholder="Example: I want to place an advertisement for a new sports drink during a basketball-themed comedy movie. The target audience is young adults aged 18-35 who are interested in fitness and sports."
-                                required
-                            ></textarea>
+                    <div class="tab-container">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" onclick="switchTab('textTab')">Text Input</button>
+                            <button class="tab-button" onclick="switchTab('imageTab')">Image Input</button>
                         </div>
                         
-                        <button type="submit" class="button" id="submitBtn">
-                            Get Content Placement Recommendation
-                        </button>
-                    </form>
+                        <div id="textTab" class="tab-content active">
+                            <div class="tab-header">
+                                <button type="button" class="button clear-recommendation-btn" id="clearTextBtn">
+                                    Clear Recommendation
+                                </button>
+                            </div>
+                            <form id="queryForm">
+                                <div class="form-group">
+                                    <label for="prompt">Describe your advertisement or content and target audience:</label>
+                                    <textarea 
+                                        id="prompt" 
+                                        name="prompt" 
+                                        placeholder="Example: I want to place an advertisement for a new sports drink during a basketball-themed comedy movie. The target audience is young adults aged 18-35 who are interested in fitness and sports."
+                                        required
+                                    ></textarea>
+                                </div>
+                                
+                                <button type="submit" class="button" id="submitBtn">
+                                    Get Content Placement Recommendation
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div id="imageTab" class="tab-content">
+                            <div class="tab-header">
+                                <button type="button" class="button clear-recommendation-btn" id="clearImageRecommendationBtn">
+                                    Clear Recommendation
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label>Upload an image for content placement analysis:</label>
+                                
+                                <div class="upload-widget" id="uploadWidget">
+                                    <div class="image-upload-area" onclick="document.getElementById('imageFile').click()">
+                                        <div class="upload-icon">📷</div>
+                                        <div class="upload-text">Click to upload or drag and drop</div>
+                                        <div class="upload-subtext">PNG, JPG, GIF up to 10MB</div>
+                                        <input type="file" id="imageFile" class="file-input" accept="image/*" onchange="handleImageUpload(event)">
+                                    </div>
+                                </div>
+                                
+                                <div class="image-preview-container" id="imagePreviewContainer">
+                                    <img id="imagePreview" class="image-preview" alt="Image preview">
+                                    <div style="margin-top: 15px;">
+                                        <button type="button" class="button" id="changeImageBtn" style="background: #c2c5c8; margin-right: 10px;">
+                                            Change Image
+                                        </button>
+                                        <button type="button" class="button" id="clearImageBtn" style="background: #c2c5c8; margin-right: 10px;">
+                                            Clear
+                                        </button>
+                                        <button type="button" class="button" id="analyzeImageBtn">
+                                            Get Content Placement Recommendation
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="loading" id="loading">
                         <div class="spinner"></div>
@@ -634,7 +867,7 @@
                     </div>
                     
                     <div class="response" id="response">
-                        <h3>🎯 Ad Placement Recommendation</h3>
+                        <h3>🎯 Content Placement Recommendation</h3>
                         <div class="response-content" id="responseContent"></div>
                     </div>
                 </div>
@@ -676,6 +909,147 @@
             const section = document.getElementById(sectionId);
             section.classList.toggle('open');
         }
+        
+        // Tab functionality
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Show/hide appropriate clear button
+            const clearTextBtn = document.getElementById('clearTextBtn');
+            const clearImageBtn = document.getElementById('clearImageRecommendationBtn');
+            
+            if (tabId === 'textTab') {
+                clearTextBtn.style.display = 'inline-block';
+                clearImageBtn.style.display = 'none';
+            } else if (tabId === 'imageTab') {
+                clearTextBtn.style.display = 'none';
+                clearImageBtn.style.display = 'inline-block';
+            }
+            
+            // Clear recommendation content when switching tabs
+            clearRecommendation();
+        }
+        
+        // Image upload functionality
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const uploadWidget = document.getElementById('uploadWidget');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    return;
+                }
+                
+                // Validate file size (10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size must be less than 10MB.');
+                    return;
+                }
+                
+                // Show preview and hide upload widget
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    uploadWidget.classList.add('hidden');
+                    previewContainer.classList.add('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Change image functionality
+        function changeImage() {
+            document.getElementById('imageFile').click();
+        }
+        
+        // Clear image functionality
+        function clearImage() {
+            const uploadWidget = document.getElementById('uploadWidget');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const imageFile = document.getElementById('imageFile');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            // Reset file input
+            imageFile.value = '';
+            
+            // Hide preview and show upload widget
+            previewContainer.classList.remove('show');
+            uploadWidget.classList.remove('hidden');
+            
+            // Clear image source
+            imagePreview.src = '';
+        }
+        
+        // Clear recommendation functionality
+        function clearRecommendation() {
+            const response = document.getElementById('response');
+            const responseContent = document.getElementById('responseContent');
+            const chainOfThoughtContent = document.getElementById('chainOfThoughtContent');
+            const chainOfThoughtPlaceholder = document.getElementById('chainOfThoughtPlaceholder');
+            
+            // Hide response
+            response.style.display = 'none';
+            responseContent.innerHTML = '';
+            
+            // Reset chain of thought
+            chainOfThoughtContent.style.display = 'none';
+            chainOfThoughtPlaceholder.style.display = 'block';
+            chainOfThoughtContent.innerHTML = '';
+        }
+        
+        // Drag and drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.querySelector('.image-upload-area');
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('imageFile').files = files;
+                    handleImageUpload({ target: { files: files } });
+                }
+            });
+            
+            // Change image button event listener
+            document.getElementById('changeImageBtn').addEventListener('click', changeImage);
+            
+            // Clear image button event listener
+            document.getElementById('clearImageBtn').addEventListener('click', clearImage);
+            
+            // Clear recommendation button event listeners
+            document.getElementById('clearTextBtn').addEventListener('click', clearRecommendation);
+            document.getElementById('clearImageRecommendationBtn').addEventListener('click', clearRecommendation);
+        });
         
         // Chain of thought is now always visible in the right panel
         
@@ -819,6 +1193,88 @@
             } finally {
                 submitBtn.disabled = false;
                 loading.style.display = 'none';
+            }
+        });
+
+        // Handle image analysis
+        document.getElementById('analyzeImageBtn').addEventListener('click', async () => {
+            const imagePreview = document.getElementById('imagePreview');
+            const fileInput = document.getElementById('imageFile');
+            const analyzeBtn = document.getElementById('analyzeImageBtn');
+            const response = document.getElementById('response');
+            const responseContent = document.getElementById('responseContent');
+            const chainOfThoughtContent = document.getElementById('chainOfThoughtContent');
+            const chainOfThoughtPlaceholder = document.getElementById('chainOfThoughtPlaceholder');
+            
+            if (!imagePreview.src || imagePreview.src === '') {
+                alert('Please upload an image first');
+                return;
+            }
+            
+            // Show loading state
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Analyzing Image...';
+            response.style.display = 'none';
+            chainOfThoughtContent.style.display = 'none';
+            chainOfThoughtPlaceholder.style.display = 'block';
+            
+            try {
+                // Get the file from the input
+                const file = fileInput.files[0];
+                if (!file) {
+                    throw new Error('No image file found');
+                }
+                
+                // Convert file to base64
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const base64String = reader.result.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+                        resolve(base64String);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                
+                // Call the image analysis endpoint
+                const result = await fetch('/analyze-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image_data: base64 })
+                });
+                
+                const data = await result.json();
+                
+                if (result.ok) {
+                    // Parse and render markdown content
+                    responseContent.innerHTML = marked.parse(data.response);
+                    response.className = 'response';
+                    response.style.display = 'block';
+                    
+                    // Display chain of thought if available
+                    if (data.chain_of_thought && data.chain_of_thought !== "No chain of thought detected") {
+                        chainOfThoughtContent.innerHTML = formatChainOfThought(data.chain_of_thought);
+                        chainOfThoughtContent.style.display = 'block';
+                        chainOfThoughtPlaceholder.style.display = 'none';
+                    } else {
+                        chainOfThoughtPlaceholder.style.display = 'block';
+                        chainOfThoughtContent.style.display = 'none';
+                    }
+                } else {
+                    responseContent.textContent = 'Error: ' + data.error;
+                    response.className = 'response error';
+                    response.style.display = 'block';
+                }
+                
+            } catch (error) {
+                responseContent.innerHTML = 'Error: ' + error.message;
+                response.className = 'response error';
+                response.style.display = 'block';
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = 'Get Content Placement Recommendation';
             }
         });
     </script>
