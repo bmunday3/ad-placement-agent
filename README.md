@@ -31,8 +31,8 @@ ad-placement-agent/
 ├── 00_Movie_Dataset_Creation.ipynb    # Script scraping and dataset creation
 ├── 01a_Data_Preparation.ipynb         # Data preprocessing and cleaning
 ├── 01b_Data_Preparation_Images.ipynb  # Image processing for movie posters
-├── 02_Agent_Definition.ipynb          # RAG agent definition and configuration
-├── 03_Agent_Evaluation.ipynb          # Agent evaluation and deployment
+├── 02_Agent_Definition.ipynb          # RAG agent definition, configuration and deployment
+├── 03_Agent_Evaluation.ipynb          # Agent evaluation 
 ├── requirements.txt                   # Centralized dependency management
 ├── .gitignore                         # Git ignore patterns
 ├── LICENSE                            # Project license
@@ -55,18 +55,16 @@ Run `00_Movie_Dataset_Creation.ipynb` to:
 ### 2. Data Preparation
 Execute the data preparation notebooks:
 - `01a_Data_Preparation.ipynb`: Process, clean, and chunk script data to build Vector Search Index
-- `01b_Data_Preparation_Images.ipynb`: Generate and index embeddings from movie posters
+- `01b_Data_Preparation_Images.ipynb`: Generate and index embeddings from movie posters - not used, but still available for extensions!
 
 ### 3. Agent Definition
 Use `02_Agent_Definition.ipynb` to:
 - Define the RAG agent with vector search retrieval tool
 - Test agent with example prompt
+- Register and deploy the agent with MLflow and Unity Catalog [Agent Framework](https://docs.databricks.com/aws/en/generative-ai/agent-framework/author-agent)
 
 ### 4. Evaluation & Deployment
 Run `03_Agent_Evaluation.ipynb` to:
-- Log the agent with MLflow
-- Register agent to Unity Catalog
-- Deploy agent using [Agent Framework](https://docs.databricks.com/aws/en/generative-ai/agent-framework/author-agent)
 - Perform automated and human evaluations using MLflow 3.0 and [Agent Evaluation](https://docs.databricks.com/aws/en/mlflow3/genai/eval-monitor/)
 
 ## 🎬 Example
