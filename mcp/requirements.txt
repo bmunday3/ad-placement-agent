@@ -7,3 +7,4 @@ requests>=2.31.0
 databricks-sdk[openai]
 markdown>=3.4.0
 mcp==1.14.0
+mlflow[skinny]

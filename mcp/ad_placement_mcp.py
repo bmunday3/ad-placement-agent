@@ -1,6 +1,9 @@
 import os
 import re
 import base64
+import json
+import ast
+from mlflow.deployments import get_deploy_client
 from typing import Dict, Any, Tuple
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
@@ -20,6 +23,9 @@ mcp = FastMCP("ad-placement")
 
 # Initialize Databricks client
 w = WorkspaceClient()
+
+# Initialize MLflow deployment client
+client = get_deploy_client('databricks')
 
 # Load environment variables
 ENDPOINT_NAME = os.getenv("ENDPOINT_NAME")
@@ -132,6 +138,116 @@ def parse_response(response: str) -> Tuple[str, str]:
     
     return chain_of_thought, markdown_content
 
+def parse_response_from_output(agent_reasoning: list) -> Tuple[str, str]:
+    """
+    Parse the agent reasoning output to format it for display.
+    
+    Args:
+        agent_reasoning: The agent reasoning list (output[:-1])
+        
+    Returns:
+        Tuple of (formatted_reasoning, empty_string) - text_response is handled separately
+    """
+    
+    # Format agent reasoning for display
+    reasoning_text = ""
+    for item in agent_reasoning:
+        if item.get('type') == 'function_call':
+            reasoning_text += f"<div class='cot-tool-call'>\n"
+            reasoning_text += f"<div class='cot-tool-call-header'>🔧 Tool Call: {item.get('name', 'Unknown')}</div>\n"
+            
+            # Parse and format the query from arguments
+            try:
+                arguments = json.loads(item.get('arguments', '{}'))
+                if 'query' in arguments:
+                    reasoning_text += f"<div class='cot-query-content'><strong>Search Query:</strong> {arguments['query']}</div>\n"
+                else:
+                    reasoning_text += f"<div class='cot-json-content'>{item.get('arguments', '')}</div>\n"
+            except json.JSONDecodeError:
+                reasoning_text += f"<div class='cot-json-content'>{item.get('arguments', '')}</div>\n"
+            
+            reasoning_text += f"</div>\n"
+            
+        elif item.get('type') == 'function_call_output':
+            reasoning_text += f"<div class='cot-tool-result'>\n"
+            reasoning_text += f"<div class='cot-tool-result-header'>📋 Tool Result</div>\n"
+            
+            # Parse and format the CSV results
+            try:
+                output_data = json.loads(item.get('output', '{}'))
+                if 'value' in output_data and output_data.get('format') == 'CSV':
+                    csv_content = output_data['value']
+                    reasoning_text += format_csv_results(csv_content)
+                else:
+                    reasoning_text += f"<div class='cot-json-content'>{item.get('output', '')}</div>\n"
+            except json.JSONDecodeError:
+                reasoning_text += f"<div class='cot-json-content'>{item.get('output', '')}</div>\n"
+            
+            reasoning_text += f"</div>\n"
+    
+    return reasoning_text, ""
+
+def format_csv_results(csv_content: str) -> str:
+    """
+    Format CSV results from vector search in a creative and readable way.
+    
+    Args:
+        csv_content: CSV string containing page_content and metadata
+        
+    Returns:
+        Formatted HTML string
+    """
+    import csv
+    from io import StringIO
+    
+    formatted_html = "<div class='cot-csv-results'>\n"
+    
+    try:
+        # Use Python's csv module to properly parse the CSV
+        csv_reader = csv.reader(StringIO(csv_content))
+        
+        # Skip header row
+        next(csv_reader)
+        
+        for row in csv_reader:
+            if len(row) >= 2:
+                page_content = row[0].strip()
+                metadata_str = row[1].strip()
+                
+                # Parse metadata
+                try:
+                    print(f"DEBUG - metadata_str: {metadata_str}")
+                    # Use ast.literal_eval to handle Python-style single quotes
+                    metadata = ast.literal_eval(metadata_str)
+                    print(f"DEBUG - parsed metadata: {metadata}")
+                    title = metadata.get('title', 'Unknown Title')
+                    scene_number = metadata.get('scene_number', 'Unknown Scene')
+                    print(f"DEBUG - title: {title}, scene_number: {scene_number}")
+                except Exception as e:
+                    print(f"DEBUG - Parse error: {e}")
+                    title = "Unknown Title"
+                    scene_number = "Unknown Scene"
+                
+                # Store full content for modal, truncate for display
+                display_content = page_content[:200] + "..." if len(page_content) > 200 else page_content
+                
+                # Escape backticks and quotes for JavaScript - use full content for modal
+                escaped_full_content = page_content.replace('`', '\\`').replace('"', '\\"').replace("'", "\\'")
+                
+                formatted_html += f"""
+                <div class='cot-scene-item' data-title="{title}" data-scene-number="{scene_number}" data-full-content="{escaped_full_content}">
+                    <div class='cot-scene-title'>🎬 {title} - Scene {scene_number}</div>
+                    <div class='cot-scene-content'>{display_content}</div>
+                </div>"""
+    
+    except Exception as e:
+        # Fallback to simple display if CSV parsing fails
+        formatted_html += f"<div class='cot-csv-error'>Error parsing results: {str(e)}</div>"
+        formatted_html += f"<div class='cot-csv-raw'>{csv_content}</div>"
+    
+    formatted_html += "</div>\n"
+    return formatted_html
+
 async def image_to_text(image_data: str) -> str:
     """
     Convert image to text description using multimodal model.
@@ -173,7 +289,7 @@ async def image_to_text(image_data: str) -> str:
         raise Exception(f"Error converting image to text: {str(e)}")
 
 @mcp.tool()
-async def get_ad_placement(prompt: str) -> str:
+async def get_ad_placement(prompt: str) -> Tuple[str, str]:
     """
     Generate a recommendation for advertisement placement in movies or TV shows.
     
@@ -183,20 +299,44 @@ async def get_ad_placement(prompt: str) -> str:
                requirements or preferences.
                
     Returns:
-        A detailed recommendation including suggested movie genres, titles,
-        optimal scene types, timing, and reasoning.
+        Tuple of (text_response, agent_reasoning)
     """
-    response = w.serving_endpoints.query(
-        name=ENDPOINT_NAME,
-        messages=[
-            ChatMessage(
-                role=ChatMessageRole.USER,
-                content=prompt,
-            ),
-        ],
-    )
+    try:
+        response = client.predict(
+            endpoint=ENDPOINT_NAME,
+            inputs={"input": [{"role": "user", "content": prompt}]}
+        )
 
-    return response.choices[0].message.content
+        # Debug: print response structure
+        # print(f"DEBUG - Response type: {type(response)}")
+        # print(f"DEBUG - Response: {response}")
+        # if hasattr(response, 'output'):
+        #     print(f"DEBUG - Output type: {type(response.output)}")
+        #     print(f"DEBUG - Output: {response.output}")
+        #     if response.output and len(response.output) > 0:
+        #         print(f"DEBUG - Last output item: {response.output[-1]['content']}")
+        #         print(f"DEBUG - Last output item keys: {response.output[-1].keys() if hasattr(response.output[-1], 'keys') else 'No keys method'}")
+
+        text_response = response.output[-1]['content'][0]['text']
+        agent_reasoning = response.output[:-1]
+        # print("DEBUG - HERE")
+    except Exception as e:
+        raise Exception(f"Error getting ad placement: {str(e)}, \n\n Client {type(client)}")
+    
+    return text_response, agent_reasoning
+
+
+    # response = w.serving_endpoints.query(
+    #     name=ENDPOINT_NAME,
+    #     input=[
+    #         {
+    #             "role": "user",
+    #             "content": prompt,
+    #         },
+    #     ],
+    # )
+
+    # return response.choices[0].messages.content
 
 
 async def home(request: Request) -> HTMLResponse:
@@ -216,11 +356,11 @@ async def health_check(request: Request) -> JSONResponse:
         # Test connection to Databricks
         response = w.serving_endpoints.query(
             name=ENDPOINT_NAME,
-            messages=[
-                ChatMessage(
-                    role=ChatMessageRole.USER,
-                    content="Hello, this is a health check.",
-                ),
+            input=[
+                {
+                    "role": "user",
+                    "content": "Hello, this is a health check.",
+                },
             ],
         )
         return JSONResponse({"status": "healthy", "endpoint": ENDPOINT_NAME})
@@ -236,17 +376,17 @@ async def query_endpoint(request: Request) -> JSONResponse:
         if not prompt:
             return JSONResponse({"error": "Prompt is required"}, status_code=400)
         
-        response = await get_ad_placement(prompt)
-        chain_of_thought, markdown_content = parse_response(response)
+        text_response, agent_reasoning = await get_ad_placement(prompt)
+        chain_of_thought, _ = parse_response_from_output(agent_reasoning)
         
         # Add prompt section to the beginning of chain of thought
         prompt_section = f"<div class='cot-prompt-sent'><div class='cot-prompt-sent-header'>📝 Prompt sent to agent</div><div class='cot-prompt-sent-content'>{prompt}</div></div>\n\n"
         enhanced_chain_of_thought = prompt_section + chain_of_thought
         
         return JSONResponse({
-            "response": markdown_content,
+            "response": text_response,
             "chain_of_thought": enhanced_chain_of_thought,
-            "full_response": response
+            "full_response": text_response
         })
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
@@ -256,6 +396,7 @@ async def analyze_image_endpoint(request: Request) -> JSONResponse:
     try:
         body = await request.json()
         image_data = body.get("image_data")
+        target_audience = body.get("target_audience", "").strip()
         
         if not image_data:
             return JSONResponse({"error": "Image data is required"}, status_code=400)
@@ -264,11 +405,14 @@ async def analyze_image_endpoint(request: Request) -> JSONResponse:
         image_description = await image_to_text(image_data)
         
         # Create prompt for the agent
-        content_placement_prompt = f"Where should I place the following advertisement: {image_description}"
+        if target_audience:
+            content_placement_prompt = f"Where should I place the following advertisement: {image_description} for the following target audience: {target_audience}"
+        else:
+            content_placement_prompt = f"Where should I place the following advertisement: {image_description}"
         
         # Get ad placement recommendation
-        response = await get_ad_placement(content_placement_prompt)
-        chain_of_thought, markdown_content = parse_response(response)
+        text_response, agent_reasoning = await get_ad_placement(content_placement_prompt)
+        chain_of_thought, _ = parse_response_from_output(agent_reasoning)
         
         # Add image description and prompt to the beginning of chain of thought
         image_description_section = f"<div class='cot-image-description'><div class='cot-image-description-header'>🖼️ Image-to-Text Output</div><div class='cot-image-description-content'>{image_description}</div></div>\n\n"
@@ -276,9 +420,9 @@ async def analyze_image_endpoint(request: Request) -> JSONResponse:
         enhanced_chain_of_thought = image_description_section + prompt_section + chain_of_thought
         
         return JSONResponse({
-            "response": markdown_content,
+            "response": text_response,
             "chain_of_thought": enhanced_chain_of_thought,
-            "full_response": response,
+            "full_response": text_response,
             "image_description": image_description
         })
     except Exception as e:

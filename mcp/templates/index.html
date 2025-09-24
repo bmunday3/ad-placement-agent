@@ -370,7 +370,7 @@
         }
         
         .chain-of-thought-content-panel {
-            padding: 20px;
+            padding: 0;
             flex: 1;
             overflow-y: auto;
         }
@@ -550,6 +550,9 @@
             font-size: 14px;
             line-height: 1.5;
             color: #555;
+            border-left: none;
+            padding-left: 0;
+            margin-left: 0;
         }
         
         .chain-of-thought-placeholder {
@@ -691,6 +694,133 @@
             font-family: 'Courier New', monospace;
         }
         
+        .cot-query-content {
+            background: #e3f2fd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 12px;
+            color: #1565c0;
+        }
+        
+        .cot-csv-results {
+            margin: 0;
+        }
+        
+        .cot-csv-results .cot-scene-item:first-child {
+            margin-top: 0;
+        }
+        
+        .cot-scene-item {
+            margin: 0 0 8px 0;
+            padding: 8px 12px;
+            background: #f8fff8;
+            border-radius: 4px;
+            border-left: 4px solid #4caf50;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .cot-scene-item:hover {
+            background: #e8f5e8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .cot-scene-title {
+            font-weight: 600;
+            color: #2e7d32;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        
+        .cot-scene-content {
+            color: #555;
+            font-size: 11px;
+            line-height: 1.4;
+            font-style: italic;
+        }
+        
+        .cot-csv-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .cot-csv-raw {
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        /* Scene Modal Styles */
+        .scene-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .scene-modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .scene-modal-header {
+            background: #4caf50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .scene-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .scene-modal-close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .scene-modal-close:hover {
+            opacity: 0.7;
+        }
+        
+        .scene-modal-body {
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
         .loading {
             text-align: center;
             padding: 20px;
@@ -746,7 +876,7 @@
                 <h1>Contextual Content Placement</h1>
             </div>
             <div class="header-right">
-                <a href="https://e2-demo-west.cloud.databricks.com/ml/experiments/b822d31cbc8e4124913eabd45ad580bf/traces?o=2556758628403379" target="_blank" class="button" id="tracesBtn" style="background: #e74c3c; padding: 8px 16px; font-size: 14px; width: auto; margin: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                <a href="https://e2-demo-west.cloud.databricks.com/ml/experiments/61a7879438f44eb397dec01dd769b1b5/traces?o=2556758628403379" target="_blank" class="button" id="tracesBtn" style="background: #e74c3c; padding: 8px 16px; font-size: 14px; width: auto; margin: 0; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
                     View Traces & Evals
                     <img src="/static/images/arrow.png" alt="External link" style="width: 12px; height: 12px;">
                 </a>
@@ -845,6 +975,18 @@
                                 
                                 <div class="image-preview-container" id="imagePreviewContainer">
                                     <img id="imagePreview" class="image-preview" alt="Image preview">
+                                    
+                                    <div class="target-audience-section" style="margin-top: 15px; text-align: left;">
+                                        <label for="targetAudience" class="input-label" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Target Audience (Optional)</label>
+                                        <textarea 
+                                            id="targetAudience" 
+                                            class="input-field" 
+                                            placeholder="Describe your target audience (e.g., age, interests, demographics, behavior patterns)..."
+                                            rows="3"
+                                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; resize: vertical;"
+                                        ></textarea>
+                                    </div>
+                                    
                                     <div style="margin-top: 15px;">
                                         <button type="button" class="button" id="changeImageBtn" style="background: #c2c5c8; margin-right: 10px;">
                                             Change Image
@@ -884,6 +1026,17 @@
                     <div class="chain-of-thought-content" id="chainOfThoughtContent" style="display: none;"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Scene Modal -->
+    <div id="sceneModal" class="scene-modal">
+        <div class="scene-modal-content">
+            <div class="scene-modal-header">
+                <h3 class="scene-modal-title" id="modalTitle"></h3>
+                <span class="scene-modal-close" onclick="closeSceneModal()">&times;</span>
+            </div>
+            <div class="scene-modal-body" id="modalContent"></div>
         </div>
     </div>
 
@@ -986,9 +1139,13 @@
             const previewContainer = document.getElementById('imagePreviewContainer');
             const imageFile = document.getElementById('imageFile');
             const imagePreview = document.getElementById('imagePreview');
+            const targetAudience = document.getElementById('targetAudience');
             
             // Reset file input
             imageFile.value = '';
+            
+            // Clear target audience
+            targetAudience.value = '';
             
             // Hide preview and show upload widget
             previewContainer.classList.remove('show');
@@ -1053,14 +1210,51 @@
         
         // Chain of thought is now always visible in the right panel
         
+        // Scene Modal Functions
+        function showSceneModal(title, sceneNumber, content) {
+            const modal = document.getElementById('sceneModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalTitle.textContent = `🎬 ${title} - Scene ${sceneNumber}`;
+            modalContent.textContent = content;
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeSceneModal() {
+            const modal = document.getElementById('sceneModal');
+            modal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('sceneModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Add event delegation for scene items (handles dynamically added content)
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('.cot-scene-item')) {
+                const sceneItem = event.target.closest('.cot-scene-item');
+                const title = sceneItem.getAttribute('data-title');
+                const sceneNumber = sceneItem.getAttribute('data-scene-number');
+                const content = sceneItem.getAttribute('data-full-content');
+                
+                showSceneModal(title, sceneNumber, content);
+            }
+        });
+        
         // Function to format chain of thought content
         function formatChainOfThought(content) {
             if (!content) return '';
             
             let formatted = content;
             
-            // Format user queries (lines that don't start with < or are empty)
-            formatted = formatted.replace(/^([^<\n].+)$/gm, '<div class="cot-user-query">$1</div>');
+            // Format user queries (lines that don't start with < or are empty) - DISABLED
+            // formatted = formatted.replace(/^([^<\n].+)$/gm, '<div class="cot-user-query">$1</div>');
             
             // Format tool calls
             formatted = formatted.replace(/<tool_call>([\s\S]*?)<\/tool_call>/g, (match, jsonContent) => {
@@ -1241,12 +1435,18 @@
                 });
                 
                 // Call the image analysis endpoint
+                // Get target audience input
+                const targetAudience = document.getElementById('targetAudience').value.trim();
+                
                 const result = await fetch('/analyze-image', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ image_data: base64 })
+                    body: JSON.stringify({ 
+                        image_data: base64,
+                        target_audience: targetAudience
+                    })
                 });
                 
                 const data = await result.json();
