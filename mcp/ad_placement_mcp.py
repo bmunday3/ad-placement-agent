@@ -3,13 +3,14 @@ import re
 import base64
 import json
 import ast
+import asyncio
 from mlflow.deployments import get_deploy_client
 from typing import Dict, Any, Tuple
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from starlette.routing import Mount, Route
 from starlette.requests import Request
-from starlette.responses import JSONResponse, HTMLResponse
+from starlette.responses import JSONResponse, HTMLResponse, StreamingResponse
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 import uvicorn
@@ -426,6 +427,283 @@ async def analyze_image_endpoint(request: Request) -> JSONResponse:
             "image_description": image_description
         })
     except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+async def stream_query_endpoint(request: Request):
+    """Handle streaming ad placement queries using SSE"""
+    try:
+        body = await request.json()
+        prompt = body.get("prompt")
+        
+        print(f"[STREAM] Received text query, prompt length: {len(prompt) if prompt else 0}")
+        
+        if not prompt:
+            return JSONResponse({"error": "Prompt is required"}, status_code=400)
+        
+        async def event_generator():
+            try:
+                print("[STREAM] Starting event generator")
+                # Send prompt as first event
+                prompt_section = {
+                    "type": "prompt",
+                    "content": prompt
+                }
+                yield f"data: {json.dumps(prompt_section)}\n\n"
+                await asyncio.sleep(0)  # Force flush
+                print("[STREAM] Sent prompt event")
+                
+                # Call predict_stream
+                print("[STREAM] Calling predict_stream")
+                
+                # Track full response for formatting
+                accumulated_text = ""
+                reasoning_items = []
+                chunk_count = 0
+                
+                # Run predict_stream in executor to avoid blocking
+                # Create iterator
+                def _stream_chunks():
+                    streaming_response = client.predict_stream(
+                        endpoint=ENDPOINT_NAME,
+                        inputs={"input": [{"role": "user", "content": prompt}]}
+                    )
+                    for chunk in streaming_response:
+                        yield chunk
+                
+                # Process chunks asynchronously
+                import concurrent.futures
+                loop = asyncio.get_event_loop()
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    chunk_iter = _stream_chunks()
+                    
+                    while True:
+                        try:
+                            # Get next chunk in thread pool to avoid blocking
+                            chunk = await loop.run_in_executor(executor, lambda: next(chunk_iter, None))
+                            if chunk is None:
+                                break
+                            
+                            chunk_count += 1
+                            chunk_type = chunk.get('type')
+                            print(f"[STREAM] Chunk #{chunk_count}, type: {chunk_type}")
+                            
+                            # Handle function calls (reasoning)
+                            if chunk_type == 'response.output_item.done':
+                                item = chunk.get('item', {})
+                                item_type = item.get('type')
+                                print(f"[STREAM] Item type: {item_type}")
+                                
+                                if item_type == 'function_call':
+                                    reasoning_items.append(item)
+                                    # Format and send function call
+                                    event_data = {
+                                        "type": "reasoning",
+                                        "subtype": "function_call",
+                                        "data": item
+                                    }
+                                    yield f"data: {json.dumps(event_data)}\n\n"
+                                    await asyncio.sleep(0)  # Force flush
+                                    print("[STREAM] Sent function_call event")
+                                
+                                elif item_type == 'function_call_output':
+                                    reasoning_items.append(item)
+                                    # Format and send function call output
+                                    event_data = {
+                                        "type": "reasoning",
+                                        "subtype": "function_call_output",
+                                        "data": item
+                                    }
+                                    yield f"data: {json.dumps(event_data)}\n\n"
+                                    await asyncio.sleep(0)  # Force flush
+                                    print("[STREAM] Sent function_call_output event")
+                            
+                            # Handle text deltas (agent response)
+                            elif chunk_type == 'response.output_text.delta':
+                                delta = chunk.get('delta', '')
+                                accumulated_text += delta
+                                event_data = {
+                                    "type": "response_delta",
+                                    "delta": delta
+                                }
+                                yield f"data: {json.dumps(event_data)}\n\n"
+                                await asyncio.sleep(0)  # Force flush
+                                print(f"[STREAM] Sent response_delta, length: {len(delta)}")
+                        
+                        except StopIteration:
+                            break
+                
+                # Send completion event
+                print(f"[STREAM] Stream complete, sent {chunk_count} chunks")
+                yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                
+            except Exception as e:
+                print(f"[STREAM] Error in event_generator: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                error_data = {
+                    "type": "error",
+                    "message": str(e)
+                }
+                yield f"data: {json.dumps(error_data)}\n\n"
+        
+        return StreamingResponse(
+            event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"  # Disable nginx buffering
+            }
+        )
+        
+    except Exception as e:
+        print(f"[STREAM] Error in stream_query_endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+async def stream_image_endpoint(request: Request):
+    """Handle streaming image analysis for ad placement using SSE"""
+    try:
+        body = await request.json()
+        image_data = body.get("image_data")
+        target_audience = body.get("target_audience", "").strip()
+        
+        print(f"[STREAM] Received image query, target_audience: {target_audience[:50] if target_audience else 'None'}")
+        
+        if not image_data:
+            return JSONResponse({"error": "Image data is required"}, status_code=400)
+        
+        async def event_generator():
+            try:
+                print("[STREAM] Starting image event generator")
+                # Convert image to text description
+                image_description = await image_to_text(image_data)
+                
+                # Send image description event
+                image_desc_data = {
+                    "type": "image_description",
+                    "content": image_description
+                }
+                yield f"data: {json.dumps(image_desc_data)}\n\n"
+                await asyncio.sleep(0)
+                print("[STREAM] Sent image description event")
+                
+                # Create prompt for the agent
+                if target_audience:
+                    content_placement_prompt = f"Where should I place the following advertisement: {image_description} for the following target audience: {target_audience}"
+                else:
+                    content_placement_prompt = f"Where should I place the following advertisement: {image_description}"
+                
+                # Send prompt event
+                prompt_data = {
+                    "type": "prompt",
+                    "content": content_placement_prompt
+                }
+                yield f"data: {json.dumps(prompt_data)}\n\n"
+                await asyncio.sleep(0)
+                print("[STREAM] Sent prompt event")
+                
+                # Call predict_stream with async executor
+                print("[STREAM] Calling predict_stream for image")
+                
+                accumulated_text = ""
+                chunk_count = 0
+                
+                # Run predict_stream in executor to avoid blocking
+                def _stream_chunks():
+                    streaming_response = client.predict_stream(
+                        endpoint=ENDPOINT_NAME,
+                        inputs={"input": [{"role": "user", "content": content_placement_prompt}]}
+                    )
+                    for chunk in streaming_response:
+                        yield chunk
+                
+                # Process chunks asynchronously
+                import concurrent.futures
+                loop = asyncio.get_event_loop()
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    chunk_iter = _stream_chunks()
+                    
+                    while True:
+                        try:
+                            chunk = await loop.run_in_executor(executor, lambda: next(chunk_iter, None))
+                            if chunk is None:
+                                break
+                            
+                            chunk_count += 1
+                            chunk_type = chunk.get('type')
+                            print(f"[STREAM] Image chunk #{chunk_count}, type: {chunk_type}")
+                            
+                            # Handle function calls (reasoning)
+                            if chunk_type == 'response.output_item.done':
+                                item = chunk.get('item', {})
+                                item_type = item.get('type')
+                                print(f"[STREAM] Item type: {item_type}")
+                                
+                                if item_type == 'function_call':
+                                    event_data = {
+                                        "type": "reasoning",
+                                        "subtype": "function_call",
+                                        "data": item
+                                    }
+                                    yield f"data: {json.dumps(event_data)}\n\n"
+                                    await asyncio.sleep(0)
+                                    print("[STREAM] Sent function_call event")
+                                
+                                elif item_type == 'function_call_output':
+                                    event_data = {
+                                        "type": "reasoning",
+                                        "subtype": "function_call_output",
+                                        "data": item
+                                    }
+                                    yield f"data: {json.dumps(event_data)}\n\n"
+                                    await asyncio.sleep(0)
+                                    print("[STREAM] Sent function_call_output event")
+                            
+                            # Handle text deltas (agent response)
+                            elif chunk_type == 'response.output_text.delta':
+                                delta = chunk.get('delta', '')
+                                accumulated_text += delta
+                                event_data = {
+                                    "type": "response_delta",
+                                    "delta": delta
+                                }
+                                yield f"data: {json.dumps(event_data)}\n\n"
+                                await asyncio.sleep(0)
+                                print(f"[STREAM] Sent response_delta, length: {len(delta)}")
+                        
+                        except StopIteration:
+                            break
+                
+                # Send completion event
+                print(f"[STREAM] Image stream complete, sent {chunk_count} chunks")
+                yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                
+            except Exception as e:
+                print(f"[STREAM] Error in image event_generator: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                error_data = {
+                    "type": "error",
+                    "message": str(e)
+                }
+                yield f"data: {json.dumps(error_data)}\n\n"
+        
+        return StreamingResponse(
+            event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"
+            }
+        )
+        
+    except Exception as e:
+        print(f"[STREAM] Error in stream_image_endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return JSONResponse({"error": str(e)}, status_code=500) 
 
 # Create Starlette app
@@ -437,6 +715,8 @@ app = Starlette(
         Route("/health", health_check),
         Route("/query", query_endpoint, methods=["POST"]),
         Route("/analyze-image", analyze_image_endpoint, methods=["POST"]),
+        Route("/stream-query", stream_query_endpoint, methods=["POST"]),
+        Route("/stream-image", stream_image_endpoint, methods=["POST"]),
         Mount("/static", StaticFiles(directory="."), name="static"),
         Mount("/mcp", app=mcp.streamable_http_app())
     ]

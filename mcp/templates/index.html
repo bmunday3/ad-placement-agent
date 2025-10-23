@@ -88,7 +88,7 @@
             padding: 20px;
             flex: 1;
             overflow-y: auto;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.6;
         }
         
@@ -101,7 +101,7 @@
         .about-panel-content h4 {
             color: #34495e;
             margin: 20px 0 10px 0;
-            font-size: 14px;
+            font-size: 15px;
         }
         
         .about-panel-content ul {
@@ -144,7 +144,7 @@
         .collapsible-header h4 {
             margin: 0;
             color: #2c3e50;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
         }
         
@@ -241,13 +241,13 @@
         }
         
         .upload-text {
-            font-size: 16px;
+            font-size: 17px;
             color: #555;
             margin-bottom: 8px;
         }
         
         .upload-subtext {
-            font-size: 14px;
+            font-size: 15px;
             color: #999;
         }
         
@@ -501,7 +501,7 @@
             background: #f4f4f4;
             padding: 2px 6px;
             border-radius: 4px;
-            font-family: 'Courier New', monospace;
+            font-family: 'DM Sans', sans-serif;
             font-size: 0.9em;
         }
         
@@ -547,7 +547,7 @@
         /* Chain of thought styling */
         .chain-of-thought-content {
             font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.5;
             color: #555;
             border-left: none;
@@ -592,8 +592,8 @@
             border-radius: 6px;
             padding: 12px;
             margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
         }
         
         .cot-tool-call-header {
@@ -603,7 +603,7 @@
             margin: -12px -12px 8px -12px;
             border-radius: 6px 6px 0 0;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 13px;
         }
         
         .cot-tool-result {
@@ -612,8 +612,8 @@
             border-radius: 6px;
             padding: 12px;
             margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
         }
         
         .cot-tool-result-header {
@@ -623,7 +623,7 @@
             margin: -12px -12px 8px -12px;
             border-radius: 6px 6px 0 0;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 13px;
         }
         
         .cot-reasoning {
@@ -643,7 +643,8 @@
             margin: 4px 0;
             overflow-x: auto;
             white-space: pre-wrap;
-            font-size: 12px;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
         }
         
         .cot-image-description {
@@ -657,7 +658,7 @@
         .cot-image-description-header {
             font-weight: bold;
             color: #2e7d32;
-            font-size: 12px;
+            font-size: 13px;
             margin-bottom: 6px;
             display: flex;
             align-items: center;
@@ -665,7 +666,7 @@
         
         .cot-image-description-content {
             color: #2e7d32;
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.4;
             font-style: italic;
         }
@@ -681,7 +682,7 @@
         .cot-prompt-sent-header {
             font-weight: bold;
             color: #ef6c00;
-            font-size: 12px;
+            font-size: 13px;
             margin-bottom: 6px;
             display: flex;
             align-items: center;
@@ -689,9 +690,9 @@
         
         .cot-prompt-sent-content {
             color: #ef6c00;
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.4;
-            font-family: 'Courier New', monospace;
+            font-family: 'DM Sans', sans-serif;
         }
         
         .cot-query-content {
@@ -699,7 +700,7 @@
             padding: 8px 12px;
             border-radius: 4px;
             margin: 8px 0;
-            font-size: 12px;
+            font-size: 13px;
             color: #1565c0;
         }
         
@@ -730,13 +731,13 @@
         .cot-scene-title {
             font-weight: 600;
             color: #2e7d32;
-            font-size: 13px;
+            font-size: 14px;
             margin-bottom: 6px;
         }
         
         .cot-scene-content {
             color: #555;
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.4;
             font-style: italic;
         }
@@ -747,7 +748,7 @@
             padding: 8px 12px;
             border-radius: 4px;
             margin: 8px 0;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
         }
         
@@ -756,8 +757,8 @@
             padding: 8px 12px;
             border-radius: 4px;
             margin: 8px 0;
-            font-size: 10px;
-            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-family: 'DM Sans', sans-serif;
             white-space: pre-wrap;
             max-height: 200px;
             overflow-y: auto;
@@ -1296,6 +1297,298 @@
             return formatted;
         }
         
+        // Function to format streaming reasoning
+        function formatStreamingReasoning(eventData) {
+            const subtype = eventData.subtype;
+            const data = eventData.data;
+            
+            if (subtype === 'function_call') {
+                const name = data.name || 'Unknown';
+                let argumentsHtml = '';
+                
+                try {
+                    const args = JSON.parse(data.arguments || '{}');
+                    if (args.query) {
+                        argumentsHtml = `<div class='cot-query-content'><strong>Search Query:</strong> ${args.query}</div>`;
+                    } else {
+                        argumentsHtml = `<div class='cot-json-content'>${data.arguments || ''}</div>`;
+                    }
+                } catch (e) {
+                    argumentsHtml = `<div class='cot-json-content'>${data.arguments || ''}</div>`;
+                }
+                
+                return `<div class='cot-tool-call'>
+                    <div class='cot-tool-call-header'>🔧 Tool Call: ${name}</div>
+                    ${argumentsHtml}
+                </div>`;
+            } else if (subtype === 'function_call_output') {
+                let outputHtml = '';
+                
+                try {
+                    const outputData = JSON.parse(data.output || '{}');
+                    if (outputData.value && outputData.format === 'CSV') {
+                        outputHtml = formatCsvResults(outputData.value);
+                    } else {
+                        outputHtml = `<div class='cot-json-content'>${data.output || ''}</div>`;
+                    }
+                } catch (e) {
+                    outputHtml = `<div class='cot-json-content'>${data.output || ''}</div>`;
+                }
+                
+                return `<div class='cot-tool-result'>
+                    <div class='cot-tool-result-header'>📋 Tool Result</div>
+                    ${outputHtml}
+                </div>`;
+            }
+            
+            return '';
+        }
+        
+        // Function to format CSV results (matches backend formatting)
+        function formatCsvResults(csvContent) {
+            let html = "<div class='cot-csv-results'>\n";
+            
+            try {
+                // More robust CSV parsing that handles multiline quoted fields
+                // CSV format: "page_content","metadata"
+                // Both fields are quoted and may contain escaped quotes and newlines
+                
+                // Use a regex that can match across newlines
+                const rowRegex = /"((?:[^"\\]|\\.)*)","((?:[^"\\]|\\.)*)"/g;
+                let match;
+                let rowCount = 0;
+                
+                while ((match = rowRegex.exec(csvContent)) !== null) {
+                    rowCount++;
+                    // Skip header row
+                    if (rowCount === 1 && match[1] === 'page_content') {
+                        continue;
+                    }
+                    
+                    const pageContent = match[1];
+                    const metadataStr = match[2];
+                    
+                    if (!pageContent || !metadataStr) continue;
+                    
+                    try {
+                        // Parse metadata - convert Python dict format to JSON
+                        // Handle incomplete metadata gracefully
+                        let jsonStr = metadataStr
+                            .replace(/'/g, '"')  // Single to double quotes
+                            .replace(/\bNone\b/g, 'null')  // Python None to JSON null
+                            .replace(/\bTrue\b/g, 'true')  // Python True to JSON true
+                            .replace(/\bFalse\b/g, 'false');  // Python False to JSON false
+                        
+                        // Check if metadata looks complete
+                        if (!jsonStr.includes('{') || !jsonStr.includes('}')) {
+                            console.warn('Incomplete metadata detected, skipping:', metadataStr.substring(0, 50));
+                            continue;
+                        }
+                        
+                        const metadata = JSON.parse(jsonStr);
+                        const title = metadata.title || 'Unknown Title';
+                        const sceneNumber = metadata.scene_number || 'Unknown Scene';
+                        
+                        const displayContent = pageContent.length > 200 
+                            ? pageContent.substring(0, 200) + '...' 
+                            : pageContent;
+                        
+                        // Properly escape for HTML attribute
+                        const escapedFullContent = pageContent
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;')
+                            .replace(/'/g, '&#39;');
+                        
+                        const escapedTitle = String(title).replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const escapedSceneNumber = String(sceneNumber).replace(/"/g, '&quot;');
+                        const escapedDisplayContent = displayContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        
+                        html += `<div class='cot-scene-item' data-title="${escapedTitle}" data-scene-number="${escapedSceneNumber}" data-full-content="${escapedFullContent}">
+                            <div class='cot-scene-title'>🎬 ${escapedTitle} - Scene ${escapedSceneNumber}</div>
+                            <div class='cot-scene-content'>${escapedDisplayContent}</div>
+                        </div>`;
+                    } catch (e) {
+                        console.error('Error parsing metadata:', e, 'Raw:', metadataStr.substring(0, 100));
+                        // Still try to show something if we have valid content
+                        if (pageContent && pageContent.length > 10) {
+                            const displayContent = pageContent.length > 200 
+                                ? pageContent.substring(0, 200) + '...' 
+                                : pageContent;
+                            const escapedDisplayContent = displayContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            html += `<div class='cot-scene-item'>
+                                <div class='cot-scene-title'>🎬 Scene (metadata parse error)</div>
+                                <div class='cot-scene-content'>${escapedDisplayContent}</div>
+                            </div>`;
+                        }
+                    }
+                }
+                
+                // If no rows were parsed, show an error
+                if (rowCount <= 1) {
+                    console.error('No valid CSV rows found');
+                    html += `<div class='cot-csv-error'>No scenes found in results</div>`;
+                }
+                
+            } catch (e) {
+                console.error('Error parsing CSV results:', e);
+                html += `<div class='cot-csv-error'>Error parsing results: ${e.message}</div>`;
+            }
+            
+            html += "</div>\n";
+            return html;
+        }
+        
+        // Function to handle streaming query
+        async function handleStreamingQuery(prompt, isImageQuery = false, imageDescription = null) {
+            console.log('[STREAM] Starting streaming query', { isImageQuery, promptLength: prompt?.length });
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const analyzeBtn = document.getElementById('analyzeImageBtn');
+            const loading = document.getElementById('loading');
+            const response = document.getElementById('response');
+            const responseContent = document.getElementById('responseContent');
+            const chainOfThoughtContent = document.getElementById('chainOfThoughtContent');
+            const chainOfThoughtPlaceholder = document.getElementById('chainOfThoughtPlaceholder');
+            
+            // Show loading state
+            if (isImageQuery) {
+                analyzeBtn.disabled = true;
+                analyzeBtn.textContent = 'Analyzing Image...';
+            } else {
+                submitBtn.disabled = true;
+            }
+            loading.style.display = 'block';
+            response.style.display = 'none';
+            chainOfThoughtContent.style.display = 'none';
+            chainOfThoughtContent.innerHTML = '';
+            chainOfThoughtPlaceholder.style.display = 'block';
+            
+            // Prepare accumulated data
+            let accumulatedText = '';
+            let reasoningHtml = '';
+            
+            try {
+                const endpoint = isImageQuery ? '/stream-image' : '/stream-query';
+                const body = isImageQuery 
+                    ? { 
+                        image_data: prompt,
+                        target_audience: document.getElementById('targetAudience')?.value || ''
+                      }
+                    : { prompt: prompt };
+                
+                console.log('[STREAM] Fetching from endpoint:', endpoint);
+                
+                const fetchResponse = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body)
+                });
+                
+                console.log('[STREAM] Response status:', fetchResponse.status);
+                console.log('[STREAM] Response headers:', Object.fromEntries(fetchResponse.headers.entries()));
+                
+                if (!fetchResponse.ok) {
+                    throw new Error(`HTTP ${fetchResponse.status}: ${fetchResponse.statusText}`);
+                }
+                
+                const reader = fetchResponse.body.getReader();
+                const decoder = new TextDecoder();
+                let chunkCount = 0;
+                let buffer = ''; // Buffer for incomplete SSE messages
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        console.log('[STREAM] Stream completed, total chunks:', chunkCount);
+                        break;
+                    }
+                    
+                    chunkCount++;
+                    // Decode chunk and add to buffer
+                    buffer += decoder.decode(value, { stream: true });
+                    console.log('[STREAM] Received chunk #' + chunkCount + ', buffer size:', buffer.length);
+                    
+                    // Split by double newline (SSE message separator)
+                    const messages = buffer.split('\n\n');
+                    
+                    // Keep the last incomplete message in buffer
+                    buffer = messages.pop() || '';
+                    
+                    // Process complete messages
+                    for (const message of messages) {
+                        if (!message.trim()) continue;
+                        
+                        const lines = message.split('\n');
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const jsonData = line.substring(6);
+                                    const data = JSON.parse(jsonData);
+                                    console.log('[STREAM] Parsed event:', data.type);
+                                    
+                                    if (data.type === 'prompt') {
+                                        // Add prompt to reasoning panel
+                                        reasoningHtml = `<div class='cot-prompt-sent'><div class='cot-prompt-sent-header'>📝 Prompt sent to agent</div><div class='cot-prompt-sent-content'>${data.content}</div></div>\n` + reasoningHtml;
+                                        chainOfThoughtContent.innerHTML = reasoningHtml;
+                                        chainOfThoughtContent.style.display = 'block';
+                                        chainOfThoughtPlaceholder.style.display = 'none';
+                                    } else if (data.type === 'image_description') {
+                                        // Add image description to reasoning panel
+                                        reasoningHtml = `<div class='cot-image-description'><div class='cot-image-description-header'>🖼️ Image-to-Text Output</div><div class='cot-image-description-content'>${data.content}</div></div>\n` + reasoningHtml;
+                                        chainOfThoughtContent.innerHTML = reasoningHtml;
+                                        chainOfThoughtContent.style.display = 'block';
+                                        chainOfThoughtPlaceholder.style.display = 'none';
+                                    } else if (data.type === 'reasoning') {
+                                        // Add reasoning to panel
+                                        reasoningHtml += formatStreamingReasoning(data);
+                                        chainOfThoughtContent.innerHTML = reasoningHtml;
+                                        chainOfThoughtContent.style.display = 'block';
+                                        chainOfThoughtPlaceholder.style.display = 'none';
+                                    } else if (data.type === 'response_delta') {
+                                        // Accumulate text and render markdown
+                                        accumulatedText += data.delta;
+                                        responseContent.innerHTML = marked.parse(accumulatedText);
+                                        response.className = 'response';
+                                        response.style.display = 'block';
+                                    } else if (data.type === 'done') {
+                                        // Streaming complete
+                                        console.log('[STREAM] Received done signal');
+                                        break;
+                                    } else if (data.type === 'error') {
+                                        // Error occurred
+                                        console.error('[STREAM] Error from server:', data.message);
+                                        responseContent.textContent = 'Error: ' + data.message;
+                                        response.className = 'response error';
+                                        response.style.display = 'block';
+                                    }
+                                } catch (parseError) {
+                                    console.error('[STREAM] Error parsing JSON:', parseError, 'Line:', line);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('[STREAM] Error:', error);
+                responseContent.innerHTML = 'Error: ' + error.message;
+                response.className = 'response error';
+                response.style.display = 'block';
+            } finally {
+                if (isImageQuery) {
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.textContent = 'Get Content Placement Recommendation';
+                } else {
+                    submitBtn.disabled = false;
+                }
+                loading.style.display = 'none';
+            }
+        }
+        
         async function checkHealth() {
             const healthDiv = document.getElementById('healthStatus');
             const healthBtn = document.getElementById('healthCheckBtn');
@@ -1335,86 +1628,20 @@
             e.preventDefault();
             
             const prompt = document.getElementById('prompt').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const loading = document.getElementById('loading');
-            const response = document.getElementById('response');
-            const responseContent = document.getElementById('responseContent');
-            const chainOfThoughtContent = document.getElementById('chainOfThoughtContent');
-            const chainOfThoughtPlaceholder = document.getElementById('chainOfThoughtPlaceholder');
             
-            // Show loading state
-            submitBtn.disabled = true;
-            loading.style.display = 'block';
-            response.style.display = 'none';
-            chainOfThoughtContent.style.display = 'none';
-            chainOfThoughtPlaceholder.style.display = 'block';
-            
-            try {
-                const result = await fetch('/query', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ prompt: prompt })
-                });
-                
-                const data = await result.json();
-                
-                if (result.ok) {
-                    // Parse and render markdown content
-                    responseContent.innerHTML = marked.parse(data.response);
-                    response.className = 'response';
-                    response.style.display = 'block';
-                    
-                    // Display chain of thought if available
-                    if (data.chain_of_thought && data.chain_of_thought !== "No chain of thought detected") {
-                        chainOfThoughtContent.innerHTML = formatChainOfThought(data.chain_of_thought);
-                        chainOfThoughtContent.style.display = 'block';
-                        chainOfThoughtPlaceholder.style.display = 'none';
-                    } else {
-                        chainOfThoughtPlaceholder.style.display = 'block';
-                        chainOfThoughtContent.style.display = 'none';
-                    }
-                } else {
-                    responseContent.textContent = 'Error: ' + data.error;
-                    response.className = 'response error';
-                    response.style.display = 'block';
-                }
-            } catch (error) {
-                responseContent.innerHTML = 'Error: Unable to connect to the server';
-                response.className = 'response error';
-                response.style.display = 'block';
-            } finally {
-                submitBtn.disabled = false;
-                loading.style.display = 'none';
-            }
+            // Use streaming function
+            await handleStreamingQuery(prompt, false);
         });
 
         // Handle image analysis
         document.getElementById('analyzeImageBtn').addEventListener('click', async () => {
             const imagePreview = document.getElementById('imagePreview');
             const fileInput = document.getElementById('imageFile');
-            const analyzeBtn = document.getElementById('analyzeImageBtn');
-            const response = document.getElementById('response');
-            const responseContent = document.getElementById('responseContent');
-            const chainOfThoughtContent = document.getElementById('chainOfThoughtContent');
-            const chainOfThoughtPlaceholder = document.getElementById('chainOfThoughtPlaceholder');
             
             if (!imagePreview.src || imagePreview.src === '') {
                 alert('Please upload an image first');
                 return;
             }
-            
-            // Show loading state
-            analyzeBtn.disabled = true;
-            analyzeBtn.textContent = 'Analyzing Image...';
-            response.style.display = 'none';
-            chainOfThoughtContent.style.display = 'none';
-            chainOfThoughtPlaceholder.style.display = 'block';
-            
-            // Show loading spinner
-            const loading = document.getElementById('loading');
-            loading.style.display = 'block';
             
             try {
                 // Get the file from the input
@@ -1434,52 +1661,19 @@
                     reader.readAsDataURL(file);
                 });
                 
-                // Call the image analysis endpoint
-                // Get target audience input
-                const targetAudience = document.getElementById('targetAudience').value.trim();
-                
-                const result = await fetch('/analyze-image', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ 
-                        image_data: base64,
-                        target_audience: targetAudience
-                    })
-                });
-                
-                const data = await result.json();
-                
-                if (result.ok) {
-                    // Parse and render markdown content
-                    responseContent.innerHTML = marked.parse(data.response);
-                    response.className = 'response';
-                    response.style.display = 'block';
-                    
-                    // Display chain of thought if available
-                    if (data.chain_of_thought && data.chain_of_thought !== "No chain of thought detected") {
-                        chainOfThoughtContent.innerHTML = formatChainOfThought(data.chain_of_thought);
-                        chainOfThoughtContent.style.display = 'block';
-                        chainOfThoughtPlaceholder.style.display = 'none';
-                    } else {
-                        chainOfThoughtPlaceholder.style.display = 'block';
-                        chainOfThoughtContent.style.display = 'none';
-                    }
-                } else {
-                    responseContent.textContent = 'Error: ' + data.error;
-                    response.className = 'response error';
-                    response.style.display = 'block';
-                }
+                // Use streaming function
+                await handleStreamingQuery(base64, true);
                 
             } catch (error) {
+                const response = document.getElementById('response');
+                const responseContent = document.getElementById('responseContent');
                 responseContent.innerHTML = 'Error: ' + error.message;
                 response.className = 'response error';
                 response.style.display = 'block';
-            } finally {
+                
+                const analyzeBtn = document.getElementById('analyzeImageBtn');
                 analyzeBtn.disabled = false;
                 analyzeBtn.textContent = 'Get Content Placement Recommendation';
-                loading.style.display = 'none';
             }
         });
     </script>
